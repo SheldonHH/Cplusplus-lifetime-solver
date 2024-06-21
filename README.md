@@ -1,5 +1,34 @@
 # Cplusplus-lifetime-solver
 
+# 原理
+
+
+| Tool              | Detection Principle                                                                                   |
+|-------------------|-------------------------------------------------------------------------------------------------------|
+| Valgrind          | Uses dynamic instrumentation to insert checking code at runtime, monitoring memory allocation and deallocation to detect issues like memory leaks and illegal memory accesses. |
+| MemorySanitizer   | Uses compile-time instrumentation to insert checking code into the target program, tracking the initialization state of each memory byte at runtime to detect use-of-uninitialized-memory errors. |
+| AddressSanitizer  | Uses compile-time instrumentation to monitor memory access at runtime, detecting and reporting memory errors such as buffer overflows and use-after-free issues. |
+| Dr. Memory        | Uses dynamic instrumentation to insert checking code at runtime, monitoring memory usage to detect errors like memory leaks, out-of-bounds accesses, and use of uninitialized memory. |
+
+
+| 工具              | 检测原理                                                                                   | 推荐排序 | 优点                                                                                  | 缺点                                         |
+|-------------------|------------------------------------------------------------------------------------------|---------|-------------------------------------------------------------------------------------|--------------------------------------------|
+| AddressSanitizer  | 使用编译时插桩技术，在运行时监控内存访问，检测并报告内存错误，如缓冲区溢出和使用释放的内存。                                              | 1       | 高效、使用方便、提供详细错误报告。                                                         | 需要重新编译代码，有一定的运行时开销。                    |
+| Valgrind          | 使用动态插桩技术，在程序运行时插入检测代码，监控内存的分配和释放操作，检测内存泄漏、非法内存访问等问题。                                           | 2       | 强大的内存错误检测功能，无需修改编译选项。                                                  | 运行时开销较大，可能显著降低程序运行速度。                |
+| Dr. Memory        | 使用动态插桩技术，在程序运行时插入检测代码，监控内存使用情况，检测内存错误，如内存泄漏、越界访问和使用未初始化的内存等。                                        | 3       | 类似 Valgrind，检测多种内存问题。                                                         | 性能开销较大，可能不适用于大规模应用程序。                |
+| MemorySanitizer   | 使用编译时插桩技术，在编译时将检测代码插入目标程序，并在运行时跟踪每个内存字节的初始化状态，检测未初始化内存读取（use-of-uninitialized-memory）错误。 | 4       | 专门用于检测未初始化内存访问错误。                                                         | 主要针对未初始化内存访问问题，不适用于所有内存错误检测。    |
+
+
+
+
+
+
+# Asan
+## 原理
+ASan (AddressSanitizer) works by using compile-time instrumentation to monitor memory access at runtime, detecting and reporting memory errors such as buffer overflows and use-after-free issues.
+通过编译时插桩技术，在运行时监控内存访问，检测并报告内存错误，如缓冲区溢出和使用释放的内存
+
+## 检测
 ASan 能检测多种内存错误，包括堆缓冲区溢出、栈缓冲区溢出、使用释放的内存
 ```bash
 g++ -fsanitize=address -g -o example example.cpp
