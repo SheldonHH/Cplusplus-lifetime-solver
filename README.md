@@ -91,3 +91,67 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Shadow gap:              cc
 ==17882==ABORTING
 ```
+
+
+# Valgrind
+1. 安装Valgrind
+```bash
+sudo apt-get install valgrind -y
+```
+2. 编译代码（不需要特别的编译选项）
+```bash
+g++ -g -o use_after_free_example use_after_free_example.cpp
+```
+## 检测
+```bash
+root@e500e0d544ab:~/trading-programming/CPP-Lifetime-Solver# valgrind --leak-check=full ./use_after_free_example
+==40289== Memcheck, a memory error detector
+==40289== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==40289== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==40289== Command: ./use_after_free_example
+==40289== 
+==40289== Invalid write of size 4
+==40289==    at 0x108A84: main (use_after_free_example.cpp:7)
+==40289==  Address 0x4d46c80 is 0 bytes inside a block of size 40 free'd
+==40289==    at 0x48690B0: operator delete[](void*) (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==40289==    by 0x108A7B: main (use_after_free_example.cpp:5)
+==40289==  Block was alloc'd at
+==40289==    at 0x4866AE8: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==40289==    by 0x108A63: main (use_after_free_example.cpp:4)
+==40289== 
+==40289== Invalid read of size 4
+==40289==    at 0x108A8C: main (use_after_free_example.cpp:8)
+==40289==  Address 0x4d46c80 is 0 bytes inside a block of size 40 free'd
+==40289==    at 0x48690B0: operator delete[](void*) (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==40289==    by 0x108A7B: main (use_after_free_example.cpp:5)
+==40289==  Block was alloc'd at
+==40289==    at 0x4866AE8: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==40289==    by 0x108A63: main (use_after_free_example.cpp:4)
+==40289== 
+1
+==40289== 
+==40289== HEAP SUMMARY:
+==40289==     in use at exit: 0 bytes in 0 blocks
+==40289==   total heap usage: 3 allocs, 3 frees, 73,768 bytes allocated
+==40289== 
+==40289== All heap blocks were freed -- no leaks are possible
+==40289== 
+==40289== For lists of detected and suppressed errors, rerun with: -s
+==40289== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+```
+
+# Dr.Memory
+
+```bash
+# root@e500e0d544ab:~/trading-programming/CPP-Lifetime-Solver# uname -m
+# aarch64
+
+sudo apt-get install qemu-user-static
+sudo apt-get install libc6:i386 -y
+
+wget https://github.com/DynamoRIO/drmemory/releases/download/release_2.6.0/DrMemory-Linux-2.6.0.tar.gz
+
+tar -xvzf DrMemory-Linux-2.6.0.tar.gz 
+g++ -g -o use_after_free_example use_after_free_example.cpp
+
+```
